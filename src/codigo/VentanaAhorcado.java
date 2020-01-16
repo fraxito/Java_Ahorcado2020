@@ -1,10 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package codigo;
 
+import java.awt.Image;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 /**
@@ -13,17 +11,82 @@ import javax.swing.JButton;
  */
 public class VentanaAhorcado extends javax.swing.JFrame {
 
+    //esta variable guarda cuántos fallos llevo en el juego
+    int numeroFallos = 0;
+    
+    String palabraOculta = "CETYS";
 
     /**
      * Creates new form VentanaAhorcado
      */
     public VentanaAhorcado() {
         initComponents();
+        dibujaImagen();
     }
     //este método recibe el botón que ha sido pulsado
     //y procesa la letra que tiene en su etiqueta
     private void chequeaBoton(JButton boton){
         boton.setEnabled(false);
+        chequeaLetra(boton.getText());         
+    }
+    
+    private void chequeaLetra(String letra){
+        String palabraConGuiones = jLabel1.getText();
+        
+        if (palabraOculta.contains(letra)){
+            //en este caso la letra sí que está
+            //y hay que hacer que la o las letras se descubran en la palabra con guiones
+            char letraPulsada = letra.charAt(0);
+            for (int i=0; i< palabraOculta.length(); i++){
+                if (palabraOculta.charAt(i) == letraPulsada){
+                    palabraConGuiones = 
+                            palabraConGuiones.substring(0, 2*i)
+                            + letra
+                            + palabraConGuiones.substring(2*i+1);
+                }
+            }
+            
+            jLabel1.setText(palabraConGuiones);
+            if(!palabraConGuiones.contains("_")){
+                numeroFallos = -1;
+                dibujaImagen();
+            }
+            
+        }
+        else {
+            numeroFallos++;
+            dibujaImagen();
+        }
+        
+        
+    }
+    
+    //cambia la imagen en función de cuántos fallos llevamos
+    private void dibujaImagen(){
+        String nombreImagen = "";
+        switch (numeroFallos){
+            case -1: nombreImagen = "/imagenes/acertasteTodo.png"; break; 
+            case 0: nombreImagen = "/imagenes/ahorcado_0.png"; break; 
+            case 1: nombreImagen = "/imagenes/ahorcado_1.png"; break;
+            case 2: nombreImagen = "/imagenes/ahorcado_2.png"; break;
+            case 3: nombreImagen = "/imagenes/ahorcado_3.png"; break;
+            case 4: nombreImagen = "/imagenes/ahorcado_4.png"; break;
+            case 5: nombreImagen = "/imagenes/ahorcado_5.png"; break;
+            default : nombreImagen = "/imagenes/ahorcado_fin.png"; break;
+        }
+        
+        ImageIcon miImagen =
+                new ImageIcon(
+                        new ImageIcon(getClass().getResource(nombreImagen))
+                        .getImage()
+                        .getScaledInstance(jLabel2.getWidth(),
+                                           jLabel2.getHeight(),
+                                           Image.SCALE_DEFAULT)
+                
+        );
+        //cargo la imagen en el jLabel que muestra qué fallo llevamos
+        jLabel2.setIcon(miImagen);
+        
     }
     
     /**
